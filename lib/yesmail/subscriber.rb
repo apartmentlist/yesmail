@@ -6,7 +6,7 @@ module Yesmail
     def make_hash
       data_hash = {
           subscriptionState: "SUBSCRIBED",
-          division: { value: "Retail" },
+          division: { value: "Apartments" },
           attributes: { attributes: [] }
       }
 
@@ -24,12 +24,8 @@ module Yesmail
       }
     end
 
-    def config
-      @config ||= Configuration.new
-    end
-
     def api_create
-      handler = Poster.new(config.username, config.password)
+      handler = Poster.new(Yesmail.configuration.username, Yesmail.configuration.password)
       path = '/subscribers'
       handler.post(make_hash, path)
     end
