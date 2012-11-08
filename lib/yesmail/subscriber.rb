@@ -1,6 +1,12 @@
+# This class represents 1 person that will receive an email from Yesmail
+# It currently supports the Send and Subscribe Composite API, and the
+# Subscriber API
+
 require 'json'
 module Yesmail
   class Subscriber
+    # @attribute email [String] The email that will recieve a Yesmail email
+    # @attribute name [String] The name of the user
     attr_accessor :email, :name, :user_id
 
     def path
@@ -29,6 +35,8 @@ module Yesmail
       }
     end
 
+    # These name methods aren't really safe. They might just blow up if the
+    # name isn't formatted correctly
     def first_name
       name.split(' ').first
     end
@@ -61,6 +69,7 @@ module Yesmail
       end
     end
 
+    # This will
     def api_get
       handler.get({email: email}, path)
     end
@@ -72,6 +81,9 @@ module Yesmail
       handler.remove(delete_hash, path, user_id)
     end
 
+    # This will create all of the json from the data placed in this subscriber
+    # and send it in the form of JSON to Yesmail's subscribe and send
+    # composite API
     def api_create_and_send(master, side_table)
       data = { subscriber: make_hash }
       data[:subscriberMessage] =  master.subscriber_message_data

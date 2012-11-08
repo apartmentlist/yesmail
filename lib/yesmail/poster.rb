@@ -1,3 +1,6 @@
+# This class handles the bare communications with Yesmail
+# It uses HTTParty for the underlying http requests
+
 require 'httparty'
 module Yesmail
   class Poster
@@ -21,6 +24,9 @@ module Yesmail
       hash
     end
 
+    # This will handle an http post, and return the body of the response
+    # @param post_data [String] data that will be placed in the post body
+    # @param path [String] The URL to post the data
     def post(post_data, path)
       response = self.class.post(path, options(post_data, true))
       response.response.body
