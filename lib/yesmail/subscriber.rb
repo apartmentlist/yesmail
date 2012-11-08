@@ -7,7 +7,9 @@ module Yesmail
   class Subscriber
     # @attribute email [String] The email that will recieve a Yesmail email
     # @attribute name [String] The name of the user
-    attr_accessor :email, :name, :user_id
+    # @attribute attribute_data [Hash] used for any extra data in the user
+    #     attributes
+    attr_accessor :email, :name, :user_id, :attribute_data
 
     def path
       '/subscribers'
@@ -28,11 +30,12 @@ module Yesmail
     end
 
     def data
+      @attribute_data ||= {}
       {
         email: email,
         firstName: first_name,
         lastName: last_name
-      }
+      }.merge(attribute_data)
     end
 
     # These name methods aren't really safe. They might just blow up if the
