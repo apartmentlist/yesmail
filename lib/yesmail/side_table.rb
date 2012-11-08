@@ -1,3 +1,16 @@
+# This class handles the side table part of the outgoing JSON message to
+# Yesmail
+#
+# According to the online API, the side table is structured as such:
+#
+# { sideTable: { tables: [ { name: 'your_table_name',
+#    rows: { rows: [
+#      { columns: { columns: [
+#          { name: 'attribute_1', value: 'val1' }
+#          { name: 'attribute_2', value: 'val2' }
+#          ...
+#          ]}}]}}]}}
+
 module Yesmail
   class SideTable
     attr_accessor :table_name, :sort_id
@@ -14,6 +27,7 @@ module Yesmail
       @rows ||= { rows: [] }
     end
 
+    # This probably the only method you need to call.
     def data_to_rows(data, subscriber = nil)
       #increment the sort id
       @sort_id += 1
