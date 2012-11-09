@@ -3,9 +3,7 @@ module Yesmail
   class Master
     # @attribute api_id [String] the master_id that identifies
     #     your account with Yesmail
-    # @attribute api_transaction_id [String] the transactionID
-    #     that ids this transaction with Yesmail
-    attr_accessor :api_id, :api_transaction_id
+    attr_accessor :api_id
 
     def path
       '/masters'
@@ -16,11 +14,6 @@ module Yesmail
     def subscriber_message_data
       {
         masterId: api_id,
-        attributes: {
-          attributes: [
-              { name: 'transactionID', value: api_transaction_id }
-          ]
-        }
       }
     end
   end
