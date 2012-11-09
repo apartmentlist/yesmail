@@ -72,7 +72,6 @@ module Yesmail
       end
     end
 
-    # This will
     def api_get
       handler.get({email: email}, path)
     end
