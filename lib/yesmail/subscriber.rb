@@ -86,11 +86,11 @@ module Yesmail
     # This will create all of the json from the data placed in this subscriber
     # and send it in the form of JSON to Yesmail's subscribe and send
     # composite API
-    def api_create_and_send(master, side_table)
+    def api_create_and_send(master, side_table = nil)
       data = { subscriber: make_hash }
       data[:subscriberMessage] =  master.subscriber_message_data
       data[:subscriber][:allowResubscribe] = true
-      data[:sideTable] = side_table.payload_hash
+      data[:sideTable] = side_table.payload_hash unless side_table.nil?
 
       path = '/composite/subscribeAndSend'
       handler.post(data, path)
