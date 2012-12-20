@@ -31,11 +31,14 @@ module Yesmail
 
     def data
       @attribute_data ||= {}
-      {
-        email: email,
+      name_data = name.blank? ? {} : {
         firstName: first_name,
         lastName: last_name
-      }.merge(attribute_data)
+      }
+      
+      {
+        email: email
+      }.merge(name_data).merge(attribute_data)
     end
 
     # These name methods aren't really safe. They might just blow up if the
