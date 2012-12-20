@@ -1,11 +1,24 @@
 # This class represents 1 person that will receive an email from Yesmail
 # It currently supports the Send and Subscribe Composite API, and the
-# Subscriber API
+# Subscriber API.
+#
+# Key concepts:
+#  * A "master" is an email campaign, containing an email template.
+#  * A "subscriber" is an email recipient with many "attributes".  The one
+#     mandatory attribute is "email" (the email address).  All other
+#     attributes are determined by the master's template.
+#
+# URLs:
+#   http://devcenter.infogroupinteractive.com/index.php/Special:UserLogin
+#   http://devcenter.infogroupinteractive.com/index.php/List_of_Enterprise_Web_Services_APIs
+#   http://devcenter.infogroupinteractive.com/index.php/Subscribe_and_Send_Composite_API
+#   http://devcenter.infogroupinteractive.com/index.php/Glossary
+#
 
 require 'json'
 module Yesmail
   class Subscriber
-    # @attribute email [String] The email that will recieve a Yesmail email
+    # @attribute email [String] The email that will receive a Yesmail email
     # @attribute name [String] The name of the user
     # @attribute attribute_data [Hash] used for any extra data in the user
     #     attributes
@@ -42,7 +55,8 @@ module Yesmail
     end
 
     # These name methods aren't really safe. They might just blow up if the
-    # name isn't formatted correctly
+    # name isn't formatted correctly.  (However, they work correctly if +name+
+    # is a first name with no last name.)
     def first_name
       name.split(' ').first
     end
@@ -67,18 +81,36 @@ module Yesmail
       handler.update(make_hash, path, user_id)
     end
 
+    # Invoke api_get() and parse the response to determine the user ID, if any.
+    # @return [Fixnum] the subscriber ID associated with the email address,
+    #    or 0 if Yesmail does not know this email address.
     def get_user_id_from_email
       if user_id.nil?
         response = api_get
-        match_data = response.match(/https:\/\/services\.yesmail\.com\/enterprise\/subscribers\/(.*)/)
-        !match_data.nil? ? match_data[1].to_i : 0
+        match_data = response.match(%r[https://services\.yesmail\.com/enterprise/subscribers/(\d+)])
+        match_data.present? ? match_data[1].to_i : 0
       end
     end
 
+    # Return the raw XML response from attempting to retrieve this subscriber
+    # via their email address.
+    # @return [String] an XML response such as the following, on success:
+    #  <?xml version="1.0"?>
+    #  <yesws:uri xmlns:yesws="https://services.yesmail.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://services.yesmail.com docs/xsd/uri.xsd">https://services.yesmail.com/enterprise/subscribers/2266554</yesws:uri>
+    #
+    # Or a response such as the following on error:
+    # <?xml version="1.0"?>
+    # <yesws:error xmlns:yesws="https://services.yesmail.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://services.yesmail.com docs/xsd/error.xsd">
+    # 	<yesws:trackingId>6fff6f05-e5ea-4667-a852-6ab9eeebbeeb</yesws:trackingId>
+    #     <yesws:message>subscriber query had an empty result set.</yesws:message>    
+    # </yesws:error>
+    #
     def api_get
       handler.get({email: email}, path)
     end
 
+    # Delete this subscriber by sending an HTTP DELETE to the target URL.
+    # @return [String] the XML response from the server
     def api_remove
       data_hash = make_hash
       user_id = get_user_id_from_email
@@ -89,6 +121,11 @@ module Yesmail
     # This will create all of the json from the data placed in this subscriber
     # and send it in the form of JSON to Yesmail's subscribe and send
     # composite API
+    #
+    # @param master [Yesmail::Master] the email campaign
+    # @param side_table [Yesmail::SideTable] data to be stored in side table
+    #    or nil if no side table data should be sent
+    # @return [String] the XML response from the server
     def api_create_and_send(master, side_table = nil)
       data = { subscriber: make_hash }
       data[:subscriberMessage] =  master.subscriber_message_data
