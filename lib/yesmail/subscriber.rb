@@ -18,6 +18,8 @@
 require 'json'
 module Yesmail
   class Subscriber
+    include LogMixin
+
     # @attribute email [String] The email that will receive a Yesmail email
     # @attribute name [String] The name of the user
     # @attribute attribute_data [Hash] used for any extra data in the user
@@ -130,6 +132,9 @@ module Yesmail
       data[:sideTable] = side_table.payload_hash unless side_table.nil?
 
       path = '/composite/subscribeAndSend'
+      email = data[:subscriber][:attributes][:attributes][:email]
+      master_id = master.subscriber_message_data[:masterId]
+      info("Yesmail: subscribeAndSend #{email} to master #{master_id}")
       handler.post(data, path)
     end
   end
