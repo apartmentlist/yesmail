@@ -18,7 +18,7 @@
 require 'json'
 module Yesmail
   class Subscriber
-    include LogMixin
+    include ::LogMixin
 
     # @attribute email [String] The email that will receive a Yesmail email
     # @attribute name [String] The name of the user
