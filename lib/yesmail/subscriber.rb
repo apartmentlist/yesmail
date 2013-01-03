@@ -16,6 +16,8 @@
 #
 
 require 'json'
+require 'log_mixin'
+
 module Yesmail
   class Subscriber
     include ::LogMixin
