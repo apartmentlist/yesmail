@@ -36,6 +36,8 @@ module Yesmail
       data_hash = {
         subscriptionState: Yesmail.configuration.subscription_state,
         division: { value: Yesmail.configuration.division },
+
+        # inner list is [ {name: :attr1, value: 'val1'}, {name: ...}, ...]
         attributes: { attributes: [] }
       }
 
@@ -137,7 +139,9 @@ module Yesmail
       data[:sideTable] = side_table.payload_hash unless side_table.nil?
 
       path = '/composite/subscribeAndSend'
-      email = data[:subscriber][:attributes][:attributes][:email]
+      attrs = data[:subscriber][:attributes][:attributes]
+      # attrs has the form [ {name: :attr1, value: 'val1'}, {name: ...}, ...]
+      email = attrs.select {|h| h[:name] == :email}.first[:value]
       master_id = master.subscriber_message_data[:masterId]
       info("Yesmail: subscribeAndSend #{email} to master #{master_id}")
       handler.post(data, path)
