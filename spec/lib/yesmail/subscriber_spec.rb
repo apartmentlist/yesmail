@@ -1,4 +1,4 @@
-require 'yesmail'
+require 'spec_helper'
 
 describe 'Yesmail::Subscriber' do
   describe '#make_hash' do
