@@ -4,6 +4,7 @@ require 'yesmail/subscriber'
 require 'yesmail/configuration'
 require 'yesmail/master'
 require 'yesmail/side_table'
+
 module Yesmail
 
   def self.configuration
