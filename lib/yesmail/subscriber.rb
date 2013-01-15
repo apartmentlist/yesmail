@@ -54,7 +54,7 @@ module Yesmail
         firstName: first_name,
         lastName: last_name
       }
-      
+
       {
         email: email
       }.merge(name_data).merge(attribute_data)
@@ -84,7 +84,7 @@ module Yesmail
       data_hash = make_hash
       #allowResubscribe must be true when resubscribing a subscriber
       data_hash[:allowResubscribe] = true
-      handler.update(make_hash, path, user_id)
+      handler.update(data_hash, path, user_id)
     end
 
     # Invoke api_get() and parse the response to determine the user ID, if any.
@@ -108,7 +108,7 @@ module Yesmail
     # <?xml version="1.0"?>
     # <yesws:error xmlns:yesws="https://services.yesmail.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://services.yesmail.com docs/xsd/error.xsd">
     # 	<yesws:trackingId>6fff6f05-e5ea-4667-a852-6ab9eeebbeeb</yesws:trackingId>
-    #     <yesws:message>subscriber query had an empty result set.</yesws:message>    
+    #     <yesws:message>subscriber query had an empty result set.</yesws:message>
     # </yesws:error>
     #
     def api_get
