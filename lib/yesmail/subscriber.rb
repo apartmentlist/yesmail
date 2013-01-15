@@ -146,5 +146,9 @@ module Yesmail
       info("Yesmail: subscribeAndSend #{email} to master #{master_id}")
       handler.post(data, path)
     end
+
+    def to_s
+      make_hash.to_s
+    end
   end
 end
