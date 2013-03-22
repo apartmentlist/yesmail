@@ -1,5 +1,6 @@
 # This class handles the side table part of the outgoing JSON message to
-# Yesmail
+# Yesmail.  A side table is a table in your database related to the Yesmail
+# users table.
 #
 # According to the online API, the side table is structured as such:
 #
@@ -27,9 +28,8 @@ module Yesmail
       @rows ||= { rows: [] }
     end
 
-    # This probably the only method you need to call.
+    # This is probably the only method you need to call.
     def data_to_rows(data, subscriber = nil)
-      #increment the sort id
       @sort_id += 1
       data.merge!({ email: subscriber.email })
       columns = { columns: [] }

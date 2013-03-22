@@ -58,7 +58,7 @@ module Yesmail
     describe '#api_update' do
       let(:subscriber) { Subscriber.new }
       it 'sets allowResubscribe to true' do
-        stub(subscriber).get_user_id_from_email { 1 }
+        stub(subscriber).subscriber_id
 
         mock(subscriber.handler).update(
           post_data = hash_including(allowResubscribe: true),
