@@ -1,6 +1,6 @@
 # Yesmail
 
-A RubyGem to interact with the Yesmail api (http://www.yesmail.com/)
+A RubyGem to interact with the Yesmail API (http://www.yesmail.com/)
 
 ## Installation
 
@@ -34,6 +34,7 @@ yesmail is written and maintained by ApartmentList.com:
 
 Contributors include:
 
+ * [Heidi Galbraith] (https://github.com/heidiho)
  * [Wes Hunt](https://github.com/wesdotcool)
  * [Jon Snitow](https://github.com/otherjonvb)
  * [@jakeonrails](http://twitter.com/jakeonrails)
