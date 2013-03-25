@@ -1,5 +1,5 @@
-# This class represents 1 person that will receive an email from Yesmail
-# It currently supports the Send and Subscribe Composite API, and the
+# This class represents 1 person that will receive an email from Yesmail.
+# It currently supports the Send and Subscribe composite API, and the
 # Subscriber API.
 #
 # Key concepts:
@@ -26,7 +26,7 @@ module Yesmail
     # @attribute name [String] The name of the user
     # @attribute attribute_data [Hash] used for any extra data in the user
     #     attributes
-    attr_accessor :email, :name, :user_id, :attribute_data
+    attr_accessor :email, :name, :attribute_data
 
     def path
       '/subscribers'
@@ -44,7 +44,6 @@ module Yesmail
       data.each do |key, value|
         data_hash[:attributes][:attributes] << { name: key, value: value }
       end
-
       data_hash
     end
 
@@ -61,7 +60,7 @@ module Yesmail
     end
 
     # These name methods aren't really safe. They might just blow up if the
-    # name isn't formatted correctly.  (However, they work correctly if +name+
+    # name isn't formatted correctly. (However, they work correctly if +name+
     # is a first name with no last name.)
     def first_name
       name.split(' ').first
@@ -69,6 +68,19 @@ module Yesmail
 
     def last_name
       name.split(' ')[1..-1].join(' ')
+    end
+
+    # Invoke api_get() and parse the response to determine the user ID, if any.
+    # @return [Fixnum] The subscriber ID associated with the email address,
+    #    or nil if Yesmail does not know this email address
+    # Cache subscriber_id so we don't have to make multiple API calls
+    def subscriber_id
+      @subscriber_id ||= begin
+        user_id_pattern = %r{https://services\.yesmail\.com/enterprise/subscribers/(\d+)}
+        id_string = api_get[user_id_pattern]
+        id_string.try(:to_i)
+      end
+      @subscriber_id
     end
 
     def handler
@@ -80,27 +92,15 @@ module Yesmail
     end
 
     def api_update
-      user_id = self.user_id || get_user_id_from_email
       data_hash = make_hash
-      #allowResubscribe must be true when resubscribing a subscriber
+      # allowResubscribe must be true when resubscribing a subscriber
       data_hash[:allowResubscribe] = true
-      handler.update(data_hash, path, user_id)
-    end
-
-    # Invoke api_get() and parse the response to determine the user ID, if any.
-    # @return [Fixnum] the subscriber ID associated with the email address,
-    #    or 0 if Yesmail does not know this email address.
-    def get_user_id_from_email
-      if user_id.nil?
-        response = api_get
-        match_data = response.match(%r[https://services\.yesmail\.com/enterprise/subscribers/(\d+)])
-        match_data.present? ? match_data[1].to_i : 0
-      end
+      handler.update(data_hash, path, subscriber_id)
     end
 
     # Return the raw XML response from attempting to retrieve this subscriber
     # via their email address.
-    # @return [String] an XML response such as the following, on success:
+    # @return [String] An XML response such as the following, on success:
     #  <?xml version="1.0"?>
     #  <yesws:uri xmlns:yesws="https://services.yesmail.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://services.yesmail.com docs/xsd/uri.xsd">https://services.yesmail.com/enterprise/subscribers/2266554</yesws:uri>
     #
@@ -119,17 +119,16 @@ module Yesmail
     # @return [String] the XML response from the server
     def api_remove
       data_hash = make_hash
-      user_id = get_user_id_from_email
       delete_hash = { division: data_hash[:division][:value] }
-      handler.remove(delete_hash, path, user_id)
+      handler.remove(delete_hash, path, subscriber_id)
     end
 
-    # This will create all of the json from the data placed in this subscriber
-    # and send it in the form of JSON to Yesmail's subscribe and send
-    # composite API
+    # This will create all of the JSON from the data placed in this subscriber
+    # and send it in the form of JSON to Yesmail's Subscribe and Send
+    # composite API.
     #
-    # @param master [Yesmail::Master] the email campaign
-    # @param side_table [Yesmail::SideTable] data to be stored in side table
+    # @param master [Yesmail::Master] The email campaign
+    # @param side_table [Yesmail::SideTable] The data to be stored in side table
     #    or nil if no side table data should be sent
     # @return [String] the XML response from the server
     def api_create_and_send(master, side_table = nil)
