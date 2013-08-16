@@ -22,8 +22,7 @@ Gem::Specification.new do |s|
   # s.add_development_dependency "rspec"
   # s.add_runtime_dependency "rest-client"
   s.add_dependency 'httparty'
-  # I can't get the following to work...
-  # s.add_dependency 'log_mixin', :git => 'https://github.com/verticalbrands/log_mixin.git'
+  s.add_dependency 'log_mixin'
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'rr'
   s.add_development_dependency 'awesome_print'
